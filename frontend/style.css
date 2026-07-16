@@ -1,28 +1,23 @@
 /* =====================================================================
-   style.css
-   =========
-   THIẾT KẾ: "Rạp xiếc điên loạn trong một câu chuyện cổ tích lạc lối"
-   - Nền: tím than / đen như bên trong lều xiếc lúc nửa đêm
-   - Điểm nhấn: chanh acid (#c9ff3d), hồng cánh sen (#ff2fb0), vàng đồng (#ffc84d)
-   - Font tiêu đề: Creepster (chữ marquee rạp xiếc rợn người)
-   - Font nội dung: Space Grotesk / Space Mono (đọc rõ, hơi máy móc,
-     tạo cảm giác "trò chơi có luật lệ" giữa sự hỗn loạn)
+   style.css - Pastel Circus
+   Màu chủ đạo: D4E5FB, 66C7F4, 6C6EA0, D9D2C4, FF1053,
+                EDF8E5, E8FFBE, FFB8E3, FF819C, CE4A4A
    ===================================================================== */
 
 :root {
-  --bg-void: #120c1a;
-  --bg-tent: #1d1230;
-  --bg-card: #241a38;
-  --line: rgba(255, 255, 255, 0.08);
+  --bg-void: #D4E5FB;          /* nền xanh pastel nhạt */
+  --bg-tent: #EDF8E5;          /* xanh lá pastel */
+  --bg-card: #E8FFBE;          /* vàng chanh pastel */
+  --line: rgba(108, 110, 160, 0.25);  /* tím pastel nhạt */
 
-  --acid: #c9ff3d;
-  --magenta: #ff2fb0;
-  --gold: #ffc84d;
-  --sky: #4de3ff;
-  --danger: #ff4d6d;
+  --acid: #66C7F4;            /* xanh dương pastel */
+  --magenta: #FF819C;         /* hồng pastel */
+  --gold: #FFB8E3;            /* hồng phấn */
+  --sky: #6C6EA0;             /* tím pastel đậm hơn */
+  --danger: #CE4A4A;          /* đỏ pastel */
 
-  --text-main: #f1e9ff;
-  --text-dim: #b6a7d6;
+  --text-main: #2d2a3a;
+  --text-dim: #6C6EA0;
 
   --font-display: 'Creepster', cursive;
   --font-body: 'Space Grotesk', sans-serif;
@@ -44,9 +39,9 @@ html, body {
 
 body {
   background-image:
-    radial-gradient(circle at 15% 10%, rgba(255, 47, 176, 0.12), transparent 40%),
-    radial-gradient(circle at 85% 85%, rgba(77, 227, 255, 0.10), transparent 40%),
-    repeating-linear-gradient(135deg, rgba(255,255,255,0.015) 0 40px, transparent 40px 80px);
+    radial-gradient(circle at 15% 10%, rgba(255, 129, 156, 0.15), transparent 40%),
+    radial-gradient(circle at 85% 85%, rgba(102, 199, 244, 0.12), transparent 40%),
+    repeating-linear-gradient(135deg, rgba(255,255,255,0.03) 0 40px, transparent 40px 80px);
 }
 
 .hidden { display: none !important; }
@@ -70,7 +65,7 @@ button {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
-  text-shadow: 0 0 40px rgba(255, 47, 176, 0.25);
+  text-shadow: 0 0 40px rgba(255, 129, 156, 0.25);
   animation: flicker 4s infinite ease-in-out;
 }
 .marquee.small { font-size: 1.6rem; }
@@ -96,7 +91,7 @@ button {
 .tent-glow {
   position: absolute; inset: 0;
   background: conic-gradient(from 0deg at 50% 50%,
-    rgba(255,47,176,0.06), rgba(77,227,255,0.06), rgba(201,255,61,0.06), rgba(255,47,176,0.06));
+    rgba(255,129,156,0.06), rgba(102,199,244,0.06), rgba(201,255,61,0.06), rgba(255,129,156,0.06));
   animation: spin 40s linear infinite;
   pointer-events: none;
 }
@@ -112,7 +107,7 @@ button {
   border-radius: var(--radius);
   padding: 2.5rem;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.15);
 }
 
 .tagline {
@@ -126,7 +121,7 @@ button {
 
 .player-inputs input {
   font-family: var(--font-mono);
-  background: var(--bg-card);
+  background: white;
   border: 1px solid var(--line);
   border-radius: 8px;
   padding: 0.7rem 1rem;
@@ -146,9 +141,9 @@ button {
   font-size: 1.05rem;
   width: 100%;
   transition: transform 0.15s ease, box-shadow 0.15s ease;
-  box-shadow: 0 6px 22px rgba(255, 47, 176, 0.35);
+  box-shadow: 0 6px 22px rgba(255, 129, 156, 0.35);
 }
-.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255, 47, 176, 0.45); }
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(255, 129, 156, 0.45); }
 .btn-primary:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
 
 .btn-ghost {
@@ -178,7 +173,7 @@ button {
 .topbar-stats { display: flex; gap: 0.6rem; flex-wrap: wrap; }
 .stat-chip {
   font-family: var(--font-mono);
-  background: var(--bg-card);
+  background: white;
   border: 1px solid var(--line);
   border-radius: 999px;
   padding: 0.35rem 0.9rem;
@@ -214,7 +209,7 @@ button {
   border-radius: 10px;
   padding: 0.65rem 0.8rem;
   margin-bottom: 0.6rem;
-  background: var(--bg-card);
+  background: white;
   font-family: var(--font-mono);
   font-size: 0.85rem;
   position: relative;
@@ -262,18 +257,15 @@ button {
 .tile .tile-tokens { position: absolute; bottom: 2px; display: flex; gap: 1px; flex-wrap: wrap; justify-content: center; }
 .tile .tok { font-size: 0.8rem; filter: drop-shadow(0 0 2px #000); }
 
-.tile-TRONG { background: #e9e4f2; }
-.tile-VANG  { background: var(--gold); }
-.tile-DO    { background: var(--danger); color: #fff; }
-.tile-XANH  { background: var(--sky); }
-.tile-TIM   { background: #a06bff; color: #fff; }
-.tile-CAM   { background: #ff9640; }
-.tile-HONG  { background: #ff8fd8; }
-.tile-DICH  {
-  background: linear-gradient(135deg, var(--magenta), var(--gold));
-  color: #1a1123;
-  font-size: 0.9rem;
-}
+/* Pastel colors */
+.tile-TRONG { background: #D9D2C4; }
+.tile-VANG  { background: #FFB8E3; }
+.tile-DO    { background: #CE4A4A; color: #fff; }
+.tile-XANH  { background: #66C7F4; }
+.tile-TIM   { background: #6C6EA0; color: #fff; }
+.tile-CAM   { background: #FF819C; }
+.tile-HONG  { background: #FF1053; color: #fff; }
+.tile-DICH  { background: linear-gradient(135deg, #66C7F4, #FFB8E3); color: #1a1123; }
 
 .dice-dock {
   display: flex;
@@ -302,7 +294,7 @@ button {
 .lucky-numbers { display: flex; gap: 0.4rem; }
 .lucky-numbers button {
   width: 40px; height: 40px; border-radius: 8px;
-  background: var(--bg-card); color: var(--acid); border: 1px solid var(--acid);
+  background: white; color: var(--acid); border: 1px solid var(--acid);
   font-family: var(--font-mono); font-weight: 700;
 }
 .lucky-numbers button:hover { background: var(--acid); color: #1a1123; }
@@ -312,7 +304,7 @@ button {
 /* ---------------------------------------------------------------- */
 .modal {
   position: fixed; inset: 0;
-  background: rgba(10, 6, 16, 0.75);
+  background: rgba(10, 6, 16, 0.65);
   backdrop-filter: blur(3px);
   display: flex; align-items: center; justify-content: center;
   z-index: 50;
@@ -328,14 +320,14 @@ button {
   max-height: 85vh;
   overflow-y: auto;
   text-align: center;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2);
 }
 .modal-card h2 { font-family: var(--font-display); font-weight: 400; color: var(--gold); letter-spacing: 0.03em; }
 
 .shop-items { display: flex; flex-direction: column; gap: 0.6rem; margin: 1rem 0; }
 .shop-item {
   display: flex; justify-content: space-between; align-items: center;
-  background: var(--bg-card); border: 1px solid var(--line); border-radius: 10px;
+  background: white; border: 1px solid var(--line); border-radius: 10px;
   padding: 0.7rem 1rem; text-align: left;
 }
 .shop-item .si-info { font-size: 0.85rem; color: var(--text-dim); }
@@ -343,13 +335,13 @@ button {
   background: var(--acid); color: #1a1123; font-weight: 700;
   padding: 0.4rem 0.9rem; border-radius: 999px; font-size: 0.85rem;
 }
-.shop-item button:disabled { background: #555; color: #aaa; cursor: not-allowed; }
+.shop-item button:disabled { background: #ccc; color: #666; cursor: not-allowed; }
 
 .pending-options { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; margin-top: 1rem; }
 .pending-options button {
-  background: var(--bg-card); border: 1px solid var(--magenta); color: var(--text-main);
+  background: white; border: 1px solid var(--magenta); color: var(--text-main);
   padding: 0.6rem 1rem; border-radius: 10px; font-family: var(--font-mono);
 }
-.pending-options button:hover { background: var(--magenta); }
+.pending-options button:hover { background: var(--magenta); color: white; }
 
 #end-desc { font-size: 1.1rem; color: var(--acid); }
