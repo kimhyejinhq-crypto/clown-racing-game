@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pathfinders — Rạp Xiếc Điên Loạn</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Creepster&family=Space+Grotesk:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+<!-- Màn hình 1: Thiết lập ván chơi -->
+<section id="screen-setup" class="screen">
+  <div class="tent-glow"></div>
+  <div class="setup-card">
+    <h1 class="marquee">PATHFINDERS</h1>
+    <p class="tagline">rạp xiếc của những chú hề lạc lối trong cơn mê sảng cổ tích</p>
+
+    <div id="player-inputs" class="player-inputs">
+      <!-- JS sẽ render 2-4 ô nhập tên -->
+    </div>
+
+    <div class="setup-controls">
+      <button id="btn-add-player" class="btn-ghost" type="button">+ Thêm chú hề</button>
+      <button id="btn-remove-player" class="btn-ghost" type="button">− Bớt chú hề</button>
+    </div>
+
+    <button id="btn-start-game" class="btn-primary" type="button">🎪 Mở màn!</button>
+    <p id="setup-error" class="error-text"></p>
+  </div>
+</section>
+
+<!-- Màn hình 2: Bàn chơi chính -->
+<section id="screen-game" class="screen hidden">
+
+  <header class="topbar">
+    <div class="topbar-title">
+      <span class="marquee small">PATHFINDERS</span>
+    </div>
+    <div class="topbar-stats">
+      <div class="stat-chip">⏱ <span id="stat-timer">45:00</span></div>
+      <div class="stat-chip">🏺 Quỹ chung: <span id="stat-fund">0</span></div>
+      <div class="stat-chip">🎯 Lượt: <span id="stat-turn">1</span></div>
+    </div>
+  </header>
+
+  <main class="game-layout">
+
+    <!-- Bảng người chơi -->
+    <aside class="players-panel" id="players-panel"></aside>
+
+    <!-- Bàn cờ -->
+    <div class="board-wrap">
+      <div id="board" class="board"></div>
+      <div class="dice-dock">
+        <div id="dice-face" class="dice-face">🎲</div>
+        <button id="btn-roll" class="btn-primary" type="button">Tung xúc xắc</button>
+        <div id="lucky-picker" class="lucky-picker hidden">
+          <p>🍀 Bùa may mắn — chọn số:</p>
+          <div class="lucky-numbers">
+            <button data-n="1">1</button><button data-n="2">2</button><button data-n="3">3</button>
+            <button data-n="4">4</button><button data-n="5">5</button><button data-n="6">6</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Nhật ký -->
+    <aside class="log-panel">
+      <h3>📜 Nhật ký hỗn loạn</h3>
+      <div id="log-list" class="log-list"></div>
+    </aside>
+  </main>
+
+</section>
+
+<!-- Modal: Cửa hàng vật phẩm -->
+<div id="modal-shop" class="modal hidden">
+  <div class="modal-card">
+    <h2>🎪 Gian Hàng Của Gã Hề Bán Đồ</h2>
+    <div id="shop-items" class="shop-items"></div>
+    <button id="btn-skip-shop" class="btn-ghost" type="button">Bỏ qua, đi tiếp</button>
+  </div>
+</div>
+
+<!-- Modal: Lựa chọn cho bài Sự kiện / Bẫy (pending_action) -->
+<div id="modal-pending" class="modal hidden">
+  <div class="modal-card">
+    <h2 id="pending-title">Cần bạn chọn...</h2>
+    <p id="pending-desc"></p>
+    <div id="pending-options" class="pending-options"></div>
+  </div>
+</div>
+
+<!-- Modal: Dùng vật phẩm cần chọn mục tiêu / delta -->
+<div id="modal-item-target" class="modal hidden">
+  <div class="modal-card">
+    <h2 id="item-target-title">Chọn mục tiêu</h2>
+    <div id="item-target-options" class="pending-options"></div>
+  </div>
+</div>
+
+<!-- Modal: Kết thúc game -->
+<div id="modal-end" class="modal hidden">
+  <div class="modal-card">
+    <h2 id="end-title">🏆 Kết thúc!</h2>
+    <p id="end-desc"></p>
+    <button id="btn-restart" class="btn-primary" type="button">Chơi lại từ đầu</button>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
