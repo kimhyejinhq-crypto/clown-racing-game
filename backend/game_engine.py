@@ -28,7 +28,7 @@ huống (có sẵn lựa chọn / chưa có lựa chọn).
 import random
 import time
 
-from .constants import (
+from constants import (
     TileType, ItemType, ITEM_INFO, START_TILE, FINISH_TILE, BOARD_SIZE,
     SHOP_TILES, START_GOLD, MAX_ITEMS_CARRIED, MAX_CHAIN_REACTION,
     GAME_TIME_LIMIT_SECONDS,
