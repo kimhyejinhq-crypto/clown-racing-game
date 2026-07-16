@@ -90,6 +90,7 @@ class GameEngine:
             game_over=False,
             winner_id=None,
             log=[],
+            reverse_trap_tiles={},
         )
         self._game_started = True
         self._log(f"🎪 Rạp xiếc mở màn! {len(players)} chú hề bước vào cuộc chơi điên loạn.")
@@ -264,6 +265,24 @@ class GameEngine:
     # XỬ LÝ Ô ĐÁP
     # ------------------------------------------------------------------
     def resolve_tile(self, player, chain_depth=0):
+        # Kiểm tra bẫy ngược trước khi xử lý loại ô
+        if player.position in self.state.reverse_trap_tiles:
+            trapper_id = self.state.reverse_trap_tiles[player.position]
+            trapper = self._player(trapper_id)
+            if player.id != trapper.id and not player.finished:
+                # Chuyển 3 vàng từ người đáp ô sang kẻ gài bẫy
+                if player.gold >= 3:
+                    player.gold -= 3
+                    self.add_gold(trapper, 3)
+                    self._log(f"🪤 {player.name} dính bẫy ngược tại ô {player.position}, mất 3 vàng cho {trapper.name}!")
+                else:
+                    # Nếu không đủ, chuyển toàn bộ vàng còn lại
+                    self.add_gold(trapper, player.gold)
+                    player.gold = 0
+                    self._log(f"🪤 {player.name} dính bẫy ngược nhưng chỉ có {player.gold} vàng, mất hết cho {trapper.name}!")
+                # Xoá bẫy sau khi kích hoạt (dùng 1 lần)
+                del self.state.reverse_trap_tiles[player.position]
+
         if chain_depth > MAX_CHAIN_REACTION:
             self._log("⚠️ Chuỗi hiệu ứng quá dài, dừng lại để tránh vòng lặp vô hạn.")
             return
@@ -292,7 +311,7 @@ class GameEngine:
         others_here = [p for p in self.state.players
                         if p.id != player.id and p.position == player.position and not p.finished]
         if others_here and player.position != START_TILE:
-            victim = random.choice(others_here)  # nhiều người cùng ô -> random 1 người (ghi chú đơn giản hoá)
+            victim = random.choice(others_here)
             if victim.gold > 0:
                 victim.gold -= 1
                 self.add_gold(player, 1)
@@ -315,8 +334,6 @@ class GameEngine:
         if mercenary:
             candidates = self._others(player)
             if candidates:
-                # Đơn giản hoá: chuyển khoản lỗ sang người ĐANG NHIỀU VÀNG NHẤT
-                # (ghi chú: bản gốc không nói rõ ai là "người khác")
                 payer = max(candidates, key=lambda p: p.gold)
 
         if self.try_pay(payer, 3, to_fund=True):
@@ -371,7 +388,7 @@ class GameEngine:
         card = self.state.event_deck.pop(0)
         self._log(f"🟣 {player.name} rút bài Sự Kiện: “{card['name']}” - {card['text']}")
         self._run_card_effect("event", card, player)
-        self.state.event_deck.append(card)  # bỏ xuống đáy chồng bài
+        self.state.event_deck.append(card)
 
     def draw_trap(self, player):
         if not self.state.trap_deck:
@@ -383,9 +400,6 @@ class GameEngine:
         self.state.trap_deck.append(card)
 
     def _run_card_effect(self, source, card, player, choice=None):
-        # Lá bài "xấu" (trap luôn xấu; 1 số event xấu) có thể bị Lá Chắn chặn.
-        # Ta chỉ áp dụng lá chắn cho những lá KHÔNG cần lựa chọn phức tạp,
-        # để tránh việc chắn "nửa chừng" một lá đang chờ chọn mục tiêu.
         effect_fn = getattr(self, card["effect_id"])
         result = effect_fn(player, choice)
         if isinstance(result, dict) and result.get("await"):
@@ -413,13 +427,11 @@ class GameEngine:
         result = effect_fn(player, choice)
         self.state.pending_action = None
         if isinstance(result, dict) and result.get("await"):
-            # (hiếm khi xảy ra - 1 lá cần nhiều bước) - lưu lại pending mới
             self.state.pending_action = {**pending, "await": result["await"], "options": result.get("options", [])}
             return self.state
         if isinstance(result, str):
             self._log(result)
 
-        # Nếu ván chưa kết thúc và không còn pending -> tiếp tục dòng chảy lượt chơi
         if not self.state.game_over and not self.state.pending_action:
             player_now_current = self._current()
             if player.id == player_now_current.id:
@@ -454,8 +466,6 @@ class GameEngine:
         if not others:
             return f"{player.name} rơi vào đường hầm nhưng chẳng có ai gần đó."
         nearest = min(others, key=lambda p: abs(p.position - player.position))
-        passed = player.position < nearest.position <= player.position + 30 or \
-                 player.position > nearest.position >= player.position - 30
         old_pos = player.position
         player.position = nearest.position
         if nearest.position != old_pos:
@@ -499,15 +509,15 @@ class GameEngine:
         return f"🕊️ {player.name} được phép màu Cứu Trợ che chắn, miễn nhiễm Đỏ & Cổng trong 2 lượt."
 
     def e_reverse_trap(self, player, choice):
-        empties = [i for i in range(2, BOARD_SIZE) if self._tile(i).type != TileType.DICH]
+        empties = [i for i in range(2, BOARD_SIZE) if self._tile(i).type != TileType.DICH and i not in self.state.reverse_trap_tiles]
+        if not empties:
+            return f"{player.name} không tìm được ô trống để đặt bẫy ngược."
         if choice is None:
             return {"await": "tile_choice", "options": empties}
         idx = choice["tile"]
         if idx not in empties:
             raise GameError("Ô không hợp lệ để đặt bẫy ngược.")
-        self.state.board[idx] = self.state.board[idx]  # giữ nguyên loại ô hiển thị
-        self._reverse_trap_tiles = getattr(self, "_reverse_trap_tiles", {})
-        self._reverse_trap_tiles[idx] = player.id
+        self.state.reverse_trap_tiles[idx] = player.id
         return f"🪤 {player.name} gài bẫy ngược tại ô {idx}. Ai xui xẻo đáp trúng sẽ mất 3 vàng cho {player.name}!"
 
     def e_dance(self, player, choice):
@@ -544,9 +554,10 @@ class GameEngine:
         return f"📋 {player.name} sao chép y hệt {target.gold} vàng của {target.name}!"
 
     def e_mercenary(self, player, choice):
-        self.try_pay(player, min(4, player.gold), to_fund=True)
+        cost = min(4, player.gold)
+        self.try_pay(player, cost, to_fund=True)
         player.statuses.append(StatusEffect(kind="mercenary", turns_left=3))
-        return f"💼 {player.name} thuê Lính Đánh Thuê (trả {min(4, player.gold+ (4 if player.gold>=4 else 0))} vàng), 3 lượt tới sẽ có người trả Ô Đỏ giúp!"
+        return f"💼 {player.name} thuê Lính Đánh Thuê (trả {cost} vàng), 3 lượt tới sẽ có người trả Ô Đỏ giúp!"
 
     def e_lucky_charm(self, player, choice):
         player.statuses.append(StatusEffect(kind="lucky_charm", turns_left=2))
@@ -615,11 +626,11 @@ class GameEngine:
         self.resolve_tile(player, 1)
         return f"🍄 Nấm độc khiến {player.name} lùi 3 ô và mất 1 vàng."
 
-    # ---- 5 lá đổi map (C1-C5) - "troll cực mạnh" ----
+    # ---- 5 lá đổi map (C1-C5) ----
     def e_earthquake(self, player, choice):
         types = [self.state.board[i].type for i in range(1, BOARD_SIZE)]
         random.shuffle(types)
-        for i in range(1, BOARD_SIZE):  # giữ nguyên ô 100 (đích)
+        for i in range(1, BOARD_SIZE):
             self.state.board[i].type = types[i - 1]
             self.state.board[i].jump_target = None
         for i in range(1, BOARD_SIZE):
@@ -722,7 +733,6 @@ class GameEngine:
 
     # ------------------ TRAP EFFECTS (12 lá) ------------------
     def _blockable(self, player):
-        """Trả True nếu lá bẫy này bị Lá Chắn / Cứu Trợ chặn (và log lại)."""
         if self._has_status(player, "immune_negative"):
             self._log(f"✨ {player.name} miễn nhiễm nhờ Cứu Trợ, lá Bẫy vô hiệu.")
             return True
@@ -784,9 +794,6 @@ class GameEngine:
     def t_gold_rain(self, player, choice):
         if self._blockable(player):
             return None
-        # Đơn giản hoá: máy tự rải 5 vàng vào 5 ô ngẫu nhiên trong vòng 10 ô quanh player,
-        # tức khắc cộng cho ai đang đứng đúng ô đó (nếu không ai đứng thì vàng "chờ sẵn"
-        # được quy đổi ngay thành cộng vào Quỹ chung để không cần thêm cơ chế ô tạm).
         lo, hi = max(1, player.position - 10), min(BOARD_SIZE, player.position + 10)
         pool = [i for i in range(lo, hi + 1) if i != player.position]
         random.shuffle(pool)
@@ -935,7 +942,7 @@ class GameEngine:
             raise GameError("Vật phẩm chưa được hỗ trợ.")
 
         player.items.remove(item_type)
-        self.state.item_stock[item_type] = self.state.item_stock.get(item_type, 0) + 1  # trả lại kho (ghi chú 6)
+        self.state.item_stock[item_type] = self.state.item_stock.get(item_type, 0) + 1
         self._log(msg)
         return self.state
 
@@ -961,7 +968,7 @@ class GameEngine:
             self._finish_by_timeout()
 
     def _finish_by_timeout(self):
-        alive = self.state.players
+        alive = [p for p in self.state.players if not p.finished]
         if not alive:
             return
         best = max(alive, key=lambda p: (p.position, p.gold, len(p.items), random.random()))
@@ -978,7 +985,6 @@ class GameEngine:
         self._require_started()
         self._check_timeout()
         d = self.state.to_dict()
-        d["pending_action"] = self.state.pending_action
         d["time_limit_seconds"] = GAME_TIME_LIMIT_SECONDS
         d["shop_tiles"] = list(SHOP_TILES)
         d["item_info"] = {k.value: v for k, v in ITEM_INFO.items()}
