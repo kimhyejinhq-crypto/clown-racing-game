@@ -27,7 +27,7 @@ const API = {
 };
 
 // ---------------------------------------------------------------------
-// STATE CỤC BỘ (chỉ để nhớ myPlayerId hiện hành trong ghế hot-seat & timer)
+// STATE CỤC BỘ
 // ---------------------------------------------------------------------
 let latestState = null;
 let playerCount = 2;
@@ -105,7 +105,7 @@ function startTimerLoop() {
     const m = Math.floor(remain / 60).toString().padStart(2, "0");
     const s = Math.floor(remain % 60).toString().padStart(2, "0");
     document.getElementById("stat-timer").textContent = `${m}:${s}`;
-    if (remain <= 0) refreshState(); // hết giờ -> hỏi lại server ai thắng
+    if (remain <= 0) refreshState();
   }, 1000);
 }
 
@@ -115,15 +115,12 @@ async function refreshState() {
 }
 
 // ---------------------------------------------------------------------
-// BOARD (100 ô, snake layout 10x10 cho dễ nhìn)
+// BOARD (100 ô, snake layout 10x10)
 // ---------------------------------------------------------------------
 function renderBoard(state) {
   const board = document.getElementById("board");
   board.innerHTML = "";
 
-  // Sắp xếp thành lưới 10x10 kiểu "rắn lượn": hàng dưới cùng đi từ trái
-  // sang phải (1-10), hàng kế tiếp đi ngược (11-20 nhưng hiển thị phải
-  // sang trái), v.v. Giúp nhìn giống bàn cờ cá ngựa quen thuộc.
   const grid = [];
   for (let row = 9; row >= 0; row--) {
     const rowStart = row * 10 + 1;
@@ -174,7 +171,7 @@ function renderBoard(state) {
 function renderPlayers(state) {
   const panel = document.getElementById("players-panel");
   panel.innerHTML = "<h3 style='margin-top:0;color:var(--text-dim);font-size:1rem;'>🎭 Người chơi</h3>";
-  const colorHex = { "Đỏ": "#ff4d6d", "Xanh": "#4de3ff", "Vàng": "#ffc84d", "Tím": "#a06bff" };
+  const colorHex = { "Đỏ": "#CE4A4A", "Xanh": "#66C7F4", "Vàng": "#FFB8E3", "Tím": "#6C6EA0" };
 
   state.players.forEach((p, idx) => {
     const card = document.createElement("div");
@@ -406,7 +403,7 @@ function renderPendingModal(state) {
 function renderTileNumberInput(wrap, cb) {
   const input = document.createElement("input");
   input.type = "number"; input.min = 2; input.max = 99;
-  input.style.cssText = "padding:0.5rem;border-radius:8px;border:1px solid var(--line);background:var(--bg-card);color:var(--text-main);margin-right:0.5rem;";
+  input.style.cssText = "padding:0.5rem;border-radius:8px;border:1px solid var(--line);background:white;color:var(--text-main);margin-right:0.5rem;";
   const btn = document.createElement("button");
   btn.textContent = "Xác nhận";
   btn.onclick = () => cb(Number(input.value));
@@ -415,7 +412,7 @@ function renderTileNumberInput(wrap, cb) {
 function renderTwoTileInput(wrap, cb) {
   const a = document.createElement("input"); a.type = "number"; a.placeholder = "Ô A";
   const b = document.createElement("input"); b.type = "number"; b.placeholder = "Ô B";
-  [a, b].forEach((el) => (el.style.cssText = "padding:0.5rem;border-radius:8px;border:1px solid var(--line);background:var(--bg-card);color:var(--text-main);margin-right:0.5rem;width:80px;"));
+  [a, b].forEach((el) => (el.style.cssText = "padding:0.5rem;border-radius:8px;border:1px solid var(--line);background:white;color:var(--text-main);margin-right:0.5rem;width:80px;"));
   const btn = document.createElement("button");
   btn.textContent = "Xác nhận";
   btn.onclick = () => cb(Number(a.value), Number(b.value));
@@ -424,7 +421,7 @@ function renderTwoTileInput(wrap, cb) {
 function renderFiveTileInput(wrap, cb) {
   const input = document.createElement("input");
   input.placeholder = "vd: 5,12,40,71,88";
-  input.style.cssText = "padding:0.5rem;border-radius:8px;border:1px solid var(--line);background:var(--bg-card);color:var(--text-main);margin-right:0.5rem;width:220px;";
+  input.style.cssText = "padding:0.5rem;border-radius:8px;border:1px solid var(--line);background:white;color:var(--text-main);margin-right:0.5rem;width:220px;";
   const btn = document.createElement("button");
   btn.textContent = "Xác nhận";
   btn.onclick = () => cb(input.value.split(",").map((s) => Number(s.trim())));
@@ -432,7 +429,7 @@ function renderFiveTileInput(wrap, cb) {
 }
 
 // ---------------------------------------------------------------------
-// DÙNG VẬT PHẨM (Dao Găm cần chọn mục tiêu, Kính Áp Tròng cần chọn +-1)
+// DÙNG VẬT PHẨM
 // ---------------------------------------------------------------------
 async function handleUseItem(itemType) {
   const cur = latestState.players[latestState.current_player_index];
