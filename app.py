@@ -9,6 +9,28 @@ from backend.game_engine import GameEngine, GameError
 app = Flask(__name__)
 CORS(app)
 
+# -*- coding: utf-8 -*-
+from flask import Flask, request, jsonify, send_from_directory  # <--- Thêm 'send_from_directory' vào dòng này
+from flask_cors import CORS
+from backend.game_engine import GameEngine, GameError
+
+app = Flask(__name__, static_folder='frontend')  # <--- Sửa dòng này, thêm static_folder='frontend'
+CORS(app)
+
+# ===== THÊM ĐOẠN CODE SAU ĐÂY VÀO =====
+# Route để phục vụ file HTML và các file tĩnh (CSS, JS, ảnh...)
+@app.route('/')
+def serve_frontend():
+    return send_from_directory('frontend', 'index.html')
+
+# Route để phục vụ tất cả các file trong thư mục frontend (style.css, scripts.js, ...)
+@app.route('/<path:filename>')
+def serve_static_files(filename):
+    return send_from_directory('frontend', filename)
+# ===== KẾT THÚC ĐOẠN CODE THÊM VÀO =====
+
+# ... phần code API còn lại của bạn giữ nguyên
+
 engine = GameEngine()
 
 
