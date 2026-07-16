@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎪 Rạp xiếc điên loạn</title>
+  <link href="https://fonts.googleapis.com/css2?family=Creepster&family=Space+Grotesk:wght@400;700&family=Space+Mono&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ===== SCREEN SETUP ===== -->
+  <div id="screen-setup" class="screen">
+    <div class="tent-glow"></div>
+    <div class="setup-card">
+      <h1 class="marquee">🎪 Rạp Xiếc Điên Loạn</h1>
+      <p class="tagline">— nơi những chú hề đấu trí trên bàn cờ 100 ô —</p>
+      <div class="player-inputs" id="player-inputs"></div>
+      <div class="setup-controls">
+        <button class="btn-ghost" id="btn-add-player">➕ Thêm</button>
+        <button class="btn-ghost" id="btn-remove-player">➖ Bớt</button>
+      </div>
+      <button class="btn-primary" id="btn-start-game">🎪 Bắt đầu</button>
+      <div class="error-text" id="setup-error"></div>
+    </div>
+  </div>
+
+  <!-- ===== SCREEN GAME ===== -->
+  <div id="screen-game" class="screen hidden">
+    <!-- TOPBAR -->
+    <div class="topbar">
+      <div class="topbar-stats">
+        <span class="stat-chip">🪙 Quỹ: <span id="stat-fund">0</span></span>
+        <span class="stat-chip">⏱️ <span id="stat-timer">45:00</span></span>
+        <span class="stat-chip">📋 Lượt: <span id="stat-turn">0</span></span>
+      </div>
+      <h2 class="marquee small">Rạp xiếc điên loạn</h2>
+    </div>
+
+    <!-- GAME LAYOUT -->
+    <div class="game-layout">
+      <!-- Bảng người chơi -->
+      <div class="players-panel" id="players-panel">
+        <h3 style="margin-top:0;color:var(--text-dim);font-size:1rem;">🎭 Người chơi</h3>
+      </div>
+
+      <!-- Board + Dice -->
+      <div class="board-wrap">
+        <div class="board" id="board"></div>
+        <div class="dice-dock">
+          <div class="dice-face" id="dice-face">🎲</div>
+          <div>
+            <button class="btn-primary" id="btn-roll" style="width:auto;padding:0.6rem 1.8rem;">Tung xúc xắc</button>
+          </div>
+          <div class="lucky-picker hidden" id="lucky-picker">
+            <div style="font-size:0.9rem;color:var(--text-dim);">🍀 Bùa May Mắn: chọn số</div>
+            <div class="lucky-numbers">
+              <button data-n="1">1</button>
+              <button data-n="2">2</button>
+              <button data-n="3">3</button>
+              <button data-n="4">4</button>
+              <button data-n="5">5</button>
+              <button data-n="6">6</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Log -->
+      <div class="log-panel">
+        <h3>📜 Nhật ký</h3>
+        <div class="log-list" id="log-list"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== MODALS ===== -->
+  <!-- Cửa hàng -->
+  <div class="modal hidden" id="modal-shop">
+    <div class="modal-card">
+      <h2>🛒 Cửa hàng của gã hề bán đồ</h2>
+      <div class="shop-items" id="shop-items"></div>
+      <button class="btn-ghost" id="btn-skip-shop">Bỏ qua</button>
+    </div>
+  </div>
+
+  <!-- Pending action -->
+  <div class="modal hidden" id="modal-pending">
+    <div class="modal-card">
+      <h2 id="pending-title">🃏 Lá bài</h2>
+      <p id="pending-desc" style="color:var(--text-dim);">Chọn một lựa chọn:</p>
+      <div class="pending-options" id="pending-options"></div>
+    </div>
+  </div>
+
+  <!-- Dùng vật phẩm cần chọn mục tiêu -->
+  <div class="modal hidden" id="modal-item-target">
+    <div class="modal-card">
+      <h2 id="item-target-title">Chọn mục tiêu</h2>
+      <div class="pending-options" id="item-target-options"></div>
+    </div>
+  </div>
+
+  <!-- Kết thúc -->
+  <div class="modal hidden" id="modal-end">
+    <div class="modal-card">
+      <h2 id="end-title">🏆 Ván đấu kết thúc!</h2>
+      <p id="end-desc" style="font-size:1.2rem;color:var(--acid);"></p>
+      <button class="btn-primary" id="btn-restart" style="margin-top:1rem;">🔄 Chơi lại</button>
+    </div>
+  </div>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
