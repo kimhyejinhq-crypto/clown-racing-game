@@ -10,8 +10,8 @@ game_engine.py.
 """
 
 import random
-from constants import TileType, TILE_POOL_COUNTS, TILES_TO_DRAW, BOARD_SIZE, START_TILE, FINISH_TILE
-from models import Tile
+from .constants import TileType, TILE_POOL_COUNTS, TILES_TO_DRAW, BOARD_SIZE, START_TILE, FINISH_TILE
+from .models import Tile
 
 
 def _build_tile_pool():
