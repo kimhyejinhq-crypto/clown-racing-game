@@ -8,7 +8,7 @@ chỉ định nghĩa HÌNH DẠNG dữ liệu, giúp code dễ đọc và dễ t
 """
 
 from dataclasses import dataclass, field
-from typing import Optional
+from typing import Optional, Any
 import time
 
 from .constants import TileType, ItemType
@@ -19,7 +19,7 @@ class Tile:
     """Một ô trên bản đồ 1..100."""
     index: int
     type: TileType
-    # Chỉ Ô XANH mới dùng: ô đích khi nhảy cóc (xem constants.py ghi chú 4)
+    # Chỉ Ô XANH mới dùng: ô đích khi nhảy cóc
     jump_target: Optional[int] = None
 
     def to_dict(self):
@@ -52,12 +52,17 @@ class Player:
     color: str                 # "Đỏ" / "Xanh" / "Vàng" / "Tím"
     position: int = 1
     gold: int = 10
-    debt: int = 0               # nợ do không đủ tiền qua Cổng / Đỏ (ghi chú 7)
+    debt: int = 0               # nợ do không đủ tiền qua Cổng / Đỏ
     items: list = field(default_factory=list)     # list[ItemType]
     statuses: list = field(default_factory=list)  # list[StatusEffect]
     skip_next_turn: bool = False
     finished: bool = False
     finish_rank: Optional[int] = None
+
+    # Các trạng thái tạm cho lượt chơi (được reset sau mỗi hành động)
+    pending_double_action: bool = False
+    pending_double_roll: bool = False
+    pending_lens_delta: int = 0
 
     def to_dict(self):
         return {
@@ -90,7 +95,12 @@ class GameState:
     game_over: bool = False
     winner_id: Optional[int] = None
     log: list = field(default_factory=list)               # list[str] - nhật ký hiển thị cho người chơi
+
     pending_shop_tile: bool = False   # cờ báo frontend: người chơi vừa dừng đúng ô có shop
+    pending_action: Optional[dict] = None  # đang chờ người chơi chọn
+
+    # Dùng cho bẫy ngược (reverse trap) – lưu ô nào do ai đặt
+    reverse_trap_tiles: dict = field(default_factory=dict)
 
     def to_dict(self):
         return {
@@ -104,6 +114,7 @@ class GameState:
             "winner_id": self.winner_id,
             "log": self.log[-40:],   # chỉ trả về 40 dòng log gần nhất cho gọn
             "pending_shop_tile": self.pending_shop_tile,
+            "pending_action": self.pending_action,
             "item_stock": {k.value: v for k, v in self.item_stock.items()},
             "reserve_count": len(self.reserve_pool),
             "event_deck_count": len(self.event_deck),
